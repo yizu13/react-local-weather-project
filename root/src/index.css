@@ -1,7 +1,7 @@
 :root{
   position: absolute;
   border-radius: 30px;
-  box-shadow: 5px 5px 15px rgb(47, 77, 102), -10px -10px 10px white;;
+  box-shadow: 5px 5px 15px rgb(47, 77, 102);
   top: 50%;
   left: 50%;
   width: 70%;
