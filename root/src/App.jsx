@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import cloud from './assets/backgroundcloud.png'
 import cloud2 from './assets/cloud_part.png'
 import waterDrop from './assets/drop.png'
+import clear_sky from './assets/clear-sky.png'
+import rain from './assets/rain.png'
 import feelingTemperature from './assets/temperature.png'
 import maxTemperature from './assets/RedarrowUp.png'
 import minTemperature from './assets/BlueArrowDown.png'
@@ -19,74 +21,56 @@ function App() {
   
   const [ActiveTab, setActiveTab] = useState(0)
 
+  const [loading, setLoad] = useState(true)
+
   const tabs = [{tabName: "Semana"},{tabName: "Mes"},{tabName: "3 Meses"},{tabName: "6 Meses"}]
 
   const date = new Date(); const today = date.getDay();
 
   const days = [{dayName: "Domingo"},{dayName: "Lunes"},{dayName: "Martes"},{dayName: "Miércoles"},{dayName: "Jueves"},{dayName: "Viernes"},{dayName: "Sábado"}]
+  
+  const [City, setCity] = useState("SantoDomingo");
 
-  const weather_example = [
-    {
-      "timestamp": 1740247200,
-      "temp": 13,
-      "feels_like": 12,
-      "humidity": 70,
-      "min_temp": 10,
-      "max_temp": 13,
-      "weather": "Clouds",
-      "cloud_pct": 40,
-      "wind_speed": 2.36,
-      "wind_degrees": 231
-    },
-    {
-      "timestamp": 1740258000,
-      "temp": 11,
-      "feels_like": 11,
-      "humidity": 76,
-      "min_temp": 9,
-      "max_temp": 11,
-      "weather": "Clouds",
-      "cloud_pct": 27,
-      "wind_speed": 2.3,
-      "wind_degrees": 231
-    },
-    {
-      "timestamp": 1740258000,
-      "temp": 11,
-      "feels_like": 11,
-      "humidity": 80,
-      "min_temp": 9,
-      "max_temp": 11,
-      "weather": "Clouds",
-      "cloud_pct": 27,
-      "wind_speed": 2.3,
-      "wind_degrees": 231
-    },
-    {
-      "timestamp": 1740258000,
-      "temp": 11,
-      "feels_like": 11,
-      "humidity": 80,
-      "min_temp": 9,
-      "max_temp": 11,
-      "weather": "Clouds",
-      "cloud_pct": 27,
-      "wind_speed": 2.3,
-      "wind_degrees": 231
-    },
-    {
-      "timestamp": 1740258000,
-      "temp": 11,
-      "feels_like": 11,
-      "humidity": 80,
-      "min_temp": 9,
-      "max_temp": 11,
-      "weather": "Clouds",
-      "cloud_pct": 27,
-      "wind_speed": 2.3,
-      "wind_degrees": 231
+  const [position, setPosition] = useState([18.47186, -69.89232])
+
+  const [weatherListDays, setWeatherDays] = useState([]);
+
+  
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+    try{
+      console.log(City)
+    const response = await fetch(`https://api.api-ninjas.com/v1/weatherforecast?lat=${position[0]}&lon=${position[1]}`, {
+      method: "GET",
+      headers: {
+          "X-Api-Key": "YnkR9NjNE9+XDgVW1EgPgA==GqMiLC9XsIme20YT"
+      }
+  })
+  if(!response.ok){
+    throw new Error(`Response status: ${response.status}`)
+  }
+  const data = await response.json();
+  takeSpecificMoment(data)
+  console.log(data)
+}
+    catch(error){
+      console.error(error.message);
+    }}
+
+    function takeSpecificMoment(weatherApiArray){
+      let initial_value = weatherApiArray.length/10
+      let days = weatherApiArray.length/5
+      let new_Array = [];
+        for(let i = 0; i < 5; i++){
+          new_Array.push(weatherApiArray[initial_value + (days * i)])
+        }
+        console.log(new_Array);
+        setWeatherDays(new_Array)
     }
-  ]
+
+    fetchWeather();
+  },[City])
 
   function TabConstruction({ActiveTab, setActiveTab, tabs}){
       return(
@@ -108,15 +92,17 @@ function App() {
       if(ActiveTab === 0){
         return (
           <div className="content">
-            {weather_example.map((item, index) =>(
-              <div key={index} className="DaysContent">
+            <LoadingComponent/>
+            {weatherListDays.map((item, index) =>(
+              <motion.div initial={{opacity: 0, scale: 0.5}} animate={{opacity:1, scale:1}} transition={{type: "spring", duration: 0.8, delay:0.7, ease:[0, 0.71, 0.2, 1.01]}} key={index} className="DaysContent">
                 <div className="sections"><p>{CalculateNextDays(today, days)[index]}</p></div>
-                <div className="humidity"><p><img className="WaterDrop" src={waterDrop}/>{`${item.humidity}%`}</p></div>
-                <div className="weather"><img className="weatherImageclass" src={weatherImage(item.weather)}/></div>
+                <div className="humidity"><p><motion.img whileHover={{marginBottom: -4}} className="WaterDrop" src={waterDrop}/>{`${item.humidity}%`}</p></div>
+                <div className="weather"><img className="weatherImageclass" src={WeatherImage(item.weather)}/></div>
                 <div className="temperature"><img src={feelingTemperature} className="temperatureIMG"/>{`${item.feels_like}°C`}</div>
-                <div className="temperature maxtemperature"><img src={maxTemperature} className="maxIMG"/>{`${item.max_temp}°C`}</div>
-                <div className="temperature mintemperature"><img src={minTemperature} className="minIMG"/>{`${item.min_temp}°C`}</div>
-              </div>
+                <div className="temperature maxtemperature"><motion.img whileHover={{opacity: 1}} src={maxTemperature} className="maxIMG"/>{`${item.max_temp}°C`}</div>
+                <div className="temperature mintemperature"><motion.img whileHover={{opacity: 1}} src={minTemperature} className="minIMG"/>{`${item.min_temp}°C`}</div>
+                {setLoad(false)}
+              </motion.div>
             ))}
           </div>
         )
@@ -159,10 +145,29 @@ function App() {
     return new_Array
   }
 
-  function weatherImage(state){
+  function WeatherImage(state){
     if(state == "Clouds"){
       return cloudy
     }
+    else if (state == "Rain"){
+      return rain
+    }
+    else if(state == "Clear"){
+      return clear_sky
+    }
+  }
+
+  function LoadingComponent(){
+    if(loading == true){
+      return(
+        <div>
+          <TypeAnimation  className="h1_animation loading" preRenderFirstString={true} sequence={
+      ['Cargando', 1, 'Cargando...', 1000,'Cargando', 1, 'Cargando...', 1000 ]
+    }  speed={30} repeat={isFinite} cursor={false}/>
+        </div>
+      )
+    }
+
   }
 
   return (
