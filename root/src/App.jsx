@@ -3,6 +3,11 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import cloud from './assets/backgroundcloud.png'
 import cloud2 from './assets/cloud_part.png'
+import waterDrop from './assets/drop.png'
+import feelingTemperature from './assets/temperature.png'
+import maxTemperature from './assets/RedarrowUp.png'
+import minTemperature from './assets/BlueArrowDown.png'
+import cloudy from './assets/cloudy.png'
 import searchIcon from './assets/magnifying-glass.png'
 import { TypeAnimation } from 'react-type-animation';
 import { motion } from "motion/react";
@@ -44,6 +49,42 @@ function App() {
       "cloud_pct": 27,
       "wind_speed": 2.3,
       "wind_degrees": 231
+    },
+    {
+      "timestamp": 1740258000,
+      "temp": 11,
+      "feels_like": 11,
+      "humidity": 80,
+      "min_temp": 9,
+      "max_temp": 11,
+      "weather": "Clouds",
+      "cloud_pct": 27,
+      "wind_speed": 2.3,
+      "wind_degrees": 231
+    },
+    {
+      "timestamp": 1740258000,
+      "temp": 11,
+      "feels_like": 11,
+      "humidity": 80,
+      "min_temp": 9,
+      "max_temp": 11,
+      "weather": "Clouds",
+      "cloud_pct": 27,
+      "wind_speed": 2.3,
+      "wind_degrees": 231
+    },
+    {
+      "timestamp": 1740258000,
+      "temp": 11,
+      "feels_like": 11,
+      "humidity": 80,
+      "min_temp": 9,
+      "max_temp": 11,
+      "weather": "Clouds",
+      "cloud_pct": 27,
+      "wind_speed": 2.3,
+      "wind_degrees": 231
     }
   ]
 
@@ -55,7 +96,7 @@ function App() {
             
     <input type="radio" id={`radio-${index}`} name="tabs" checked={ActiveTab === index} readOnly/>
     <motion.div whileHover={index !== ActiveTab ? { scale: 1.2 }:{scale: 1.0}} whileTap={index !== ActiveTab ? { scale: 0.95 }:{scale: 1.0}} transition={{duration: 0.1 }} className="tab" htmlFor={`radio-${index}`} onClick={() => setActiveTab(index)}>{item.tabName}
-          {index === ActiveTab ? (<motion.span className="glider" layoutId='circle' id='circle'/>):null}
+          {index === ActiveTab ? (<motion.span className="glider" layoutId='circle' id='circle' transition={{type:"spring"}}/>):null}
     </motion.div>
          </div>
         ))}
@@ -68,9 +109,13 @@ function App() {
         return (
           <div className="content">
             {weather_example.map((item, index) =>(
-              
-              <div key={index}>
-                <p>{CalculateNextDays(today, days)[index]}</p>
+              <div key={index} className="DaysContent">
+                <div className="sections"><p>{CalculateNextDays(today, days)[index]}</p></div>
+                <div className="humidity"><p><img className="WaterDrop" src={waterDrop}/>{`${item.humidity}%`}</p></div>
+                <div className="weather"><img className="weatherImageclass" src={weatherImage(item.weather)}/></div>
+                <div className="temperature"><img src={feelingTemperature} className="temperatureIMG"/>{`${item.feels_like}°C`}</div>
+                <div className="temperature maxtemperature"><img src={maxTemperature} className="maxIMG"/>{`${item.max_temp}°C`}</div>
+                <div className="temperature mintemperature"><img src={minTemperature} className="minIMG"/>{`${item.min_temp}°C`}</div>
               </div>
             ))}
           </div>
@@ -114,6 +159,12 @@ function App() {
     return new_Array
   }
 
+  function weatherImage(state){
+    if(state == "Clouds"){
+      return cloudy
+    }
+  }
+
   return (
     <>
     <div className="frame">
@@ -126,7 +177,7 @@ function App() {
     />
       <div className='search'>
       <input type='text' placeholder='Busca una provincia' className='state_searcher' ></input>
-      <img className="searchIcon"src={searchIcon}/>
+      <img className="searchIcon" src={searchIcon}/>
       </div>
       <div className="tabs_container">
       <TabConstruction ActiveTab={ActiveTab} setActiveTab={setActiveTab} tabs={tabs} />
