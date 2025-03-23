@@ -194,7 +194,13 @@ function App() {
         <img src={cloud} className="cloud1"/>
         <img src={cloud2} className="cloud2"/>
         <img src={cloud} className="cloud3"/>
-      </div>
+        </div>
+        <div>
+          <h3 className='thisDay' id='main'>Hoy</h3>
+          <h4 className='thisDayD' htmlFor='main'>Sábado, 22-3-25</h4>
+          <img className='Thisdayimg' src={WeatherImage("Clouds")}/>
+          <h2 className='thisDayh2'>29<p className='thisDayh2p'>°C</p></h2>
+        </div>
     </div>
     </>
   )
